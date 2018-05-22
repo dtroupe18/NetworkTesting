@@ -34,7 +34,7 @@ class TestStubbedApiCall: QuickSpec {
                         do {
                             let simulatedJsonData: Data = try Data(contentsOf: url)
                             
-                            // stub the url so that all requests to this url will use the stored JSON data and not make a network request
+                            // Stub the url so that all requests to this url will use stored JSON data
                             self.stub(uri("https://api.spacexdata.com/v2/rockets/falconheavy"), delay: nil, jsonData(simulatedJsonData))
                             
                             // Here make the request which will use our stubbed data
@@ -42,7 +42,10 @@ class TestStubbedApiCall: QuickSpec {
                                 returnedRocketData = rocketData
                             })
                             
+                            // Check that we got rocket data
                             expect(returnedRocketData).toEventuallyNot(beNil())
+                            
+                            // Check that values were parsed correctly
                             expect(returnedRocketData?.name) == "Falcon Heavy"
                             expect(returnedRocketData?.engines.thrustVacuum.lbf) == 205500
                             expect(returnedRocketData?.costPerLaunch) == 90000000
@@ -83,13 +86,14 @@ class TestStubbedApiCall: QuickSpec {
                         do {
                             let simulatedJsonData: Data = try Data(contentsOf: url)
                             
-                            // stub the url so that all requests to this url will use the stored JSON data and not make a network request
+                            // Stub the url so that all requests to this url will use the stored JSON data
                             self.stub(uri("https://api.spacexdata.com/v2/rockets/falconheavy"), delay: nil, jsonData(simulatedJsonData))
                             
                             ApiClient.getRocketInfo(rocketName: "falconheavy", onError: { error in
                                 returnedError = error
                             })
                             expect(returnedError).toEventuallyNot(beNil())
+                            // Make sure the correct error was returned
                             expect(returnedError?.localizedDescription) == expectedError.localizedDescription
                         } catch {
                             fail("Error thrown: \(error)")
